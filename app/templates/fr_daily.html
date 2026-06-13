@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fracción de Radiación Interceptada (FR) - PROLIVE</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+</head>
+
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{{ url_for('home.home') }}">PROLIVE</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <!-- 🔹 Menú desplegable para PAR -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#"
+                       id="parDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        PAR
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="parDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('par.par') }}">
+                                Cálculo de PAR diaria
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#"
+                       id="prodDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        Producción
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="prodDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('prod.prod') }}">
+                                Cálculo de producción
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+
+               <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#"
+                       id="frconnorDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        FR Connor
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="frconnorDropdown">
+                        <li>
+                            <a class="dropdown-item" href="{{ url_for('fr_daily.fr_daily') }}">
+                                Cálculo de FR diaria
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#"
+                       id="rcaDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        RCA
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="rcaDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('rca.rca') }}">Cálculo de RCA</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('vrca.vrca') }}">Influencia de las variables</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('reprca.reprca') }}">Representación de hectárea</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#"
+                       id="hleDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        HLE
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="hleDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('hle.hle') }}">Cálculo de HLE</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('vhle.vhle') }}">Influencia de las variables</a></li>
+                    </ul>
+                </li>
+                
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#"
+                       id="rcaHleDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">
+                        RCA * HLE
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="rcaHleDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('rca_hle.rca_hle') }}">Cálculo de RCA * HLE</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('rca_hle.rca_hle') }}">Influencia de las variables</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for('fr.fr') }}">
+                        FR
+                    </a>
+                </li>
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+
+<!-- 🔹 Contenido principal -->
+<div class="container mt-5">
+    <h2 class="text-center fw-bold">Fracción de Radiación Interceptada (FR)</h2>
+
+    <div class="row justify-content-center mt-4">
+
+        <!-- 🔹 Controles -->
+        <div class="col-md-4">
+            <div class="card shadow p-4">
+                <h5 class="fw-bold text-center">Parámetros de Entrada</h5>
+
+                <!-- Localización -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        Latitud (°): <span id="lat_value">38</span>
+                    </label>
+                    <input type="range" id="lat" class="form-range"
+                           min="-60" max="60" step="0.5" value="38"
+                           oninput="updateValue('lat')">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Longitud (°): <span id="lon_value">0</span>
+                    </label>
+                    <input type="range" id="lon" class="form-range"
+                           min="-180" max="180" step="1" value="0"
+                           oninput="updateValue('lon')">
+                </div>
+
+                <hr>
+
+                <!-- Rango DOY -->
+                <div class="mb-3">
+                    <label class="form-label">
+                        DOY inicio: <span id="DOY_ini_value">150</span>
+                    </label>
+                    <input type="range" id="DOY_ini" class="form-range"
+                           min="1" max="365" step="1" value="150"
+                           oninput="updateValue('DOY_ini')">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        DOY fin: <span id="DOY_fin_value">300</span>
+                    </label>
+                    <input type="range" id="DOY_fin" class="form-range"
+                           min="1" max="365" step="1" value="300"
+                           oninput="updateValue('DOY_fin')">
+                </div>
+
+                <hr>
+
+                <!-- Arquitectura -->
+                <h6 class="fw-bold mt-3">Arquitectura del olivar</h6>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Altura h (m): <span id="h_value">3</span>
+                    </label>
+                    <input type="range" id="h" class="form-range"
+                           min="1" max="5" step="0.1" value="3"
+                           oninput="updateValue('h')">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Anchura inferior w (m): <span id="w_value">3</span>
+                    </label>
+                    <input type="range" id="w" class="form-range"
+                           min="1" max="5" step="0.1" value="3"
+                           oninput="updateValue('w')">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Inclinación ψ
+                     (°): <span id="psi_value">15</span>
+                    </label>
+                    <input type="range" id="psi" class="form-range"
+                           min="0" max="30" step="1" value="15"
+                           oninput="updateValue('psi')">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Separación entre setos d (m): <span id="d_value">6</span>
+                    </label>
+                    <input type="range" id="d" class="form-range"
+                           min="1" max="8" step="0.2" value="6"
+                           oninput="updateValue('d')">
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">
+                        Orientación η (°): <span id="eta_value">0</span>
+                    </label>
+                    <input type="range" id="eta" class="form-range"
+                           min="0" max="90" step="5" value="0"
+                           oninput="updateValue('eta')">
+                </div>
+
+                <button class="btn btn-primary w-100 mt-2" onclick="updateFR()">
+                    Calcular FR
+                </button>
+            </div>
+        </div>
+
+        <!-- 🔹 Resultados -->
+        <div class="col-md-6">
+            <div class="card shadow p-4 text-center">
+                <h5 class="fw-bold">
+                    RCA:
+                    <span id="rca_value">---</span>
+                </h5>
+
+                <img id="fr_plot" src="" alt="FR diaria"
+                     class="img-fluid mt-3">
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- 🔹 JS -->
+<script>
+    function updateValue(id) {
+        document.getElementById(id + "_value").innerText =
+            document.getElementById(id).value;
+    }
+
+    function updateFR() {
+        const payload = {
+            lat: document.getElementById("lat").value,
+            lon: document.getElementById("lon").value,
+            DOY_ini: document.getElementById("DOY_ini").value,
+            DOY_fin: document.getElementById("DOY_fin").value,
+            h: document.getElementById("h").value,
+            w: document.getElementById("w").value,
+            psi: document.getElementById("psi").value,
+            d: document.getElementById("d").value,
+            eta: document.getElementById("eta").value
+        };
+
+        fetch("/simulate_fr_daily", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload)
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("rca_value").innerText =
+                data.RCA.toFixed(3);
+
+            document.getElementById("fr_plot").src =
+                "data:image/png;base64," + data.image;
+        })
+        .catch(err => {
+            console.error(err);
+            alert("Error en la simulación FR");
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", updateFR);
+</script>
+
+<!-- 🔹 Footer -->
+<footer class="bg-dark text-white text-center py-3 mt-5">
+    <p>© 2025 PROLIVE - DRIMAY | Radiación y arquitectura del olivar</p>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cálculo de HLE * RCA - PROLIVE</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<!-- 🔹 Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand fw-bold" href="{{ url_for('home.home') }}">PROLIVE</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                
+                <!-- 🔹 Menú desplegable para RCA con hover -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="rcaDropdown" role="button">
+                        RCA
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="rcaDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('rca.rca') }}">Cálculo de RCA</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('vrca.vrca') }}">Influencia de las variables</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('reprca.reprca') }}">Representación de hectárea</a></li>
+                    </ul>
+                </li>
+
+                <!-- 🔹 Menú desplegable para HLE con hover -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="hleDropdown" role="button">
+                        HLE
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="hleDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('hle.hle') }}">Cálculo de HLE</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('vhle.vhle') }}">Influencia de las variables</a></li>
+                    </ul>
+                </li>
+
+                <!-- 🔹 Menú desplegable para RCA * HLE con hover -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="rcaHleDropdown" role="button">
+                        RCA * HLE
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="rcaHleDropdown">
+                        <li><a class="dropdown-item" href="{{ url_for('rca_hle.rca_hle') }}">Cálculo de RCA * HLE</a></li>
+                        <li><a class="dropdown-item" href="{{ url_for('rca_hle.rca_hle') }}">Influencia de las variables</a></li>
+                    </ul>
+                </li>
+
+                <li class="nav-item"><a class="nav-link" href="{{ url_for('fr.fr') }}">FR</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- 🔹 Script para abrir dropdowns con hover -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        document.querySelectorAll(".nav-item.dropdown").forEach(function(el) {
+            el.addEventListener("mouseenter", function() {
+                this.classList.add("show");
+                this.querySelector(".dropdown-menu").classList.add("show");
+            });
+            el.addEventListener("mouseleave", function() {
+                this.classList.remove("show");
+                this.querySelector(".dropdown-menu").classList.remove("show");
+            });
+        });
+    });
+</script>
+
+
+
+    <!-- 🔹 Contenido Principal -->
+    <div class="container mt-5">
+        <h2 class="text-center fw-bold">Cálculo de HLE * RCA</h2>
+        <div class="row justify-content-center mt-4">
+            <!-- 🔹 Controles -->
+            <div class="col-md-4">
+                <div class="card shadow p-4">
+                    <h5 class="fw-bold text-center">Parámetros de Entrada</h5>
+                    
+                    <!-- Sliders de Variables -->
+                    <div class="mb-3">
+                        <label for="h" class="form-label">Altura del seto (h en metros): <span id="h_value">2.0</span></label>
+                        <input type="range" id="h" class="form-range" min="1.0" max="3.0" step="0.1" value="2.0" oninput="updateValue('h')">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="d" class="form-label">Espaciado entre setos (d en metros): <span id="d_value">4.0</span></label>
+                        <input type="range" id="d" class="form-range" min="2.0" max="6.0" step="0.1" value="4.0" oninput="updateValue('d')">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="w" class="form-label">Ancho del dosel (w en metros): <span id="w_value">1.0</span></label>
+                        <input type="range" id="w" class="form-range" min="0.5" max="2.5" step="0.1" value="1.0" oninput="updateValue('w')">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="psi" class="form-label">Pendiente del dosel (ψ en grados): <span id="psi_value">10</span></label>
+                        <input type="range" id="psi" class="form-range" min="0" max="45" step="1" value="10" oninput="updateValue('psi')">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="eta" class="form-label">Orientación del seto (η en grados): <span id="eta_value">90</span></label>
+                        <input type="range" id="eta" class="form-range" min="0" max="180" step="5" value="90" oninput="updateValue('eta')">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="lat" class="form-label">Latitud: <span id="lat_value">37.5</span></label>
+                        <input type="number" id="lat" class="form-control" value="37.5" step="0.1">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="lon" class="form-label">Longitud: <span id="lon_value">-3.0</span></label>
+                        <input type="number" id="lon" class="form-control" value="-3.0" step="0.1">
+                    </div>
+
+                    <!-- Botón de Cálculo -->
+                    <button class="btn btn-primary w-100" onclick="calculateHLE_RCA()">Calcular HLE * RCA</button>
+                </div>
+            </div>
+
+            <!-- 🔹 Gráfica -->
+            <div class="col-md-6">
+                <div class="card shadow p-4 text-center">
+                    <h5 class="fw-bold">Historial de Consultas</h5>
+                    <img id="hle_rca_plot" src="" alt="Gráfica HLE * RCA" class="img-fluid mt-3">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function updateValue(id) {
+            document.getElementById(id + "_value").innerText = document.getElementById(id).value;
+        }
+
+        function calculateHLE_RCA() {
+            let h = parseFloat(document.getElementById('h').value);
+            let d = parseFloat(document.getElementById('d').value);
+            let w = parseFloat(document.getElementById('w').value);
+            let psi = parseFloat(document.getElementById('psi').value);
+            let eta = parseFloat(document.getElementById('eta').value);
+            let lat = parseFloat(document.getElementById('lat').value);
+            let lon = parseFloat(document.getElementById('lon').value);
+
+            fetch('/update_hle_rca', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ h, d, w, psi, eta, lat, lon })
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('hle_rca_plot').src = 'data:image/png;base64,' + data.image;
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+<body class="d-flex flex-column vh-100">
+    <div class="container flex-grow-1">
+        <!-- Todo el contenido de la página aquí -->
+    </div>
+
+    <!-- 🔹 Footer -->
+    <footer class="bg-dark text-white text-center py-3 mt-auto">
+        <p>© 2025 PROLIVE - DRIMAY | Optimización de olivares en seto</p>
+    </footer>
+</body>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

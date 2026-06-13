@@ -17,7 +17,7 @@ Flask-SQLAlchemy==3.1.1
 Flask-WTF==1.2.2
 fonttools==4.55.8
 greenlet==3.1.1
-gunicorn==21.2.3
+gunicorn==21.2.0
 h5py==3.12.1
 idna==3.10
 itsdangerous==2.2.0

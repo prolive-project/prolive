@@ -9,13 +9,13 @@ def create_app():
     app = Flask(__name__)
     app.config.from_object(Config)
 
-    # Inicializar la base de datos
+    # Inicializar base de datos
     db.init_app(app)
-    
-    # Inicializar Flask-Migrate
+
+    # Flask-Migrate
     migrate = Migrate(app, db)
 
-    # Configurar Flask-Login
+    # Flask-Login
     login_manager = LoginManager()
     login_manager.login_view = "auth.login"
     login_manager.init_app(app)
@@ -24,7 +24,22 @@ def create_app():
     def load_user(user_id):
         return User.query.get(int(user_id))
 
-    # Importar y registrar rutas
+    # Crear tablas + usuario admin (IMPORTANTE)
+    with app.app_context():
+        db.create_all()
+
+        # Crear usuario admin si no existe
+        admin = User.query.filter_by(email="admin@test.com").first()
+        if not admin:
+            admin = User(
+                name="admin",
+                email="admin@test.com",
+                password="admin123"
+            )
+            db.session.add(admin)
+            db.session.commit()
+
+    # Blueprints
     from app.routes.home import home_bp
     from app.routes.rca import rca_bp
     from app.routes.hle import hle_bp
@@ -38,7 +53,7 @@ def create_app():
     from app.routes.fr_daily_rad import fr_daily_bp
     from app.routes.produccion import prod_bp
 
-    from app.routes.dash_reprca import create_dash_app # 🔹 Importar Dash
+    from app.routes.dash_reprca import create_dash_app
 
     app.register_blueprint(home_bp)
     app.register_blueprint(rca_bp)
@@ -53,6 +68,7 @@ def create_app():
     app.register_blueprint(fr_daily_bp)
     app.register_blueprint(prod_bp)
 
-    # 🔹 Iniciar Dash dentro de Flask
+    # Dash
     create_dash_app(app)
+
     return app

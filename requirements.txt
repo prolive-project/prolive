@@ -34,6 +34,7 @@ pillow==11.1.0
 plotly==6.0.0
 pvlib==0.11.2
 pyparsing==3.2.1
+psycopg2-binary==2.9.9
 python-dateutil==2.9.0.post0
 python-dotenv==1.0.1
 pytz==2024.2
